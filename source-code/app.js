@@ -2,16 +2,21 @@
 const express = require('express');
 const { MongoClient } = require('mongodb');
 
-// Configuration for MongoDB connection
+// Configuration for MongoDB connection from environment variables
 const dbConfig = {
-    url: 'mongodb://localhost:27017', // Thay bằng URI của MongoDB
-    database: 'testdb',              // Tên cơ sở dữ liệu
+    url: process.env.MONGO_URL, // MongoDB URI from ENV
+    database: process.env.MONGO_DATABASE || 'testdb',        // Database name from ENV
 };
 
+const delayTime = parseInt(process.env.DELAY_TIME, 10) || 5000; // Delay time in milliseconds from ENV
+
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 app.use(express.json());
+
+// Function to introduce a delay
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // API POST: Ghi dữ liệu vào database
 app.post('/data', async (req, res) => {
@@ -20,6 +25,9 @@ app.post('/data', async (req, res) => {
     try {
         // Kết nối đến MongoDB
         await client.connect();
+
+        console.log(`Connected to MongoDB. Delaying for ${delayTime}ms before writing to the database...`);
+        await delay(delayTime); // Delay before writing data
 
         // Lấy dữ liệu từ body request
         const { name, value } = req.body;

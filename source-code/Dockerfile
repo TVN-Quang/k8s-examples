@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 3000
 
 # Lệnh chạy server Node.js
-CMD ["node", "index.js"]
+CMD ["node", "app.js"]
